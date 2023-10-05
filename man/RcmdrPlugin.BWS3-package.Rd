@@ -1,0 +1,146 @@
+\docType{package}
+\name{RcmdrPlugin.BWS3-package}
+\alias{RcmdrPlugin.BWS3-package}
+\alias{RcmdrPlugin.BWS3}
+\alias{bws3Design}
+\alias{resetBws3Table}
+\alias{bws3Questions}
+\alias{bws3DesignMatrix}
+\alias{loadBws3Design}
+\alias{bws3Dataset}
+\alias{resetBws3Dataset}
+\alias{loadBws3Dataset}
+\alias{bws3Fitmodel}
+\alias{resetBws3Model}
+\alias{bws3Mwtp}
+\alias{clogitP}
+\alias{bws3dataP}
+
+\title{R Commander Plug-in for Case 3 Best-Worst Scaling}
+
+\description{
+This package adds menu items for case 3 (multi-profile case) best--worst scaling (BWS3) 
+to the R Commander. 
+BWS3 is a question-based survey method that 
+designs various combinations of attribute levels (profiles), 
+asks respondents to select the best and worst profiles in each choice set, 
+and then measurespreferences for the attribute levels by analyzing the responses. 
+For details on BWS3, refer to Louviere et al. (2015). 
+}
+
+\details{
+This package is an R Commander plug-in package for case 3 best--worst 
+scaling (BWS3). It depends on \pkg{\link{support.BWS3}} (Aizaki 2019),
+\pkg{\link{support.CEs}} (Aizaki 2012, 2023), 
+\pkg{survival} (Therneau 2023; Therneau and Grambsch 2000), and 
+\pkg{\link{Rcmdr}} (Fox 2005, 2017; Fox and Bouchet-Valat 2023). 
+Refer to Aizaki (2019) and 
+\dQuote{Non-Market Valuation with R} <\url{http://lab.agr.hokudai.ac.jp/nmvr/}> 
+for a brief introduction to BWS3 in R.
+
+After successfully installing and loading the \pkg{RcmdrPlugin.BWS3}, 
+the R Commander window will appear, and then you will find \dQuote{BWS3} 
+added to the top-level menus in the R Commander window.
+
+Selecting \dQuote{BWS3} displays menu items. When selecting a menu item, 
+the corresponding dialog box opens. The following dialog boxes are 
+provided by \pkg{RcmdrPlugin.BWS3}:
+\itemize{
+
+   \item The dialog box for \dQuote{Design choice sets...} designs 
+choice sets for BWS3 with the rotation design method or mix-and-match method 
+using the function \code{\link[support.CEs]{rotation.design}} 
+in \pkg{\link{support.CEs}}.
+
+   \item The dialog box for \dQuote{Import choice sets...} read an RDS file 
+containing the choice sets saved in the first dialog box using 
+the function \code{\link[base]{readRDS}} in \pkg{\link{base}}. 
+
+   \item The dialog box for \dQuote{Display questions...} 
+shows BWS3 questions that are converted from the choice sets designed in the first dialog box 
+using the function \code{\link[support.CEs]{questionnaire}} in \pkg{\link{support.CEs}}.
+
+   \item The dialog box for \dQuote{Create data set for analysis...} 
+creates a data set for analysis from the choice sets designed in the first 
+dialog box and a data set containing responses to BWS3 questions using 
+the function \code{\link[support.BWS3]{bws3.dataset}} in \pkg{\link{support.BWS3}}. 
+The current version assumes that a maximum difference model is used. 
+The menu item \dQuote{Create data set for analysis...} is activated 
+if a data set is selected as the active data set.
+
+
+   \item The dialog box for \dQuote{Import data set for analysis...} 
+read an RDS file containing the data set for analysis created in the previous daialog box 
+using the function \code{\link[base]{readRDS}} in \pkg{\link{base}}. 
+
+   \item The dialog box for \dQuote{Fit model...} implements a conditional 
+logit model analysis of the data set for analysis created in the previous 
+dialog box using the functions \code{\link[survival]{clogit}} 
+in \pkg{survival} and \code{\link[support.CEs]{gofm}} 
+in \pkg{\link{support.CEs}}. The menu item \dQuote{Fit model...} is activated 
+if a data set for analysis created in the previous dialog box is selected as 
+the active data set.
+
+   \item The dialog box for \dQuote{Calculate MWTPs...} 
+calculates marginal willingness to pays (MWTPs) of non-monetary variables 
+from the model fitted in the previous dialog box using the function 
+\code{\link[support.CEs]{mwtp}} in \pkg{\link{support.CEs}}. The menu item 
+\dQuote{Calculate MWTPs...} is activated if the active model is of 
+class \code{"clogit"}.
+
+}
+}
+
+\section{Acknowledgments}{
+This work was supported by JSPS KAKENHI Grant Number JP20K06251.
+}
+
+\author{
+Hideo Aizaki
+}
+
+\references{
+Aizaki H (2012) Basic Functions for Supporting an Implementation of Choice Experiments in R.
+\emph{Journal of Statistical Software}, 50(C2): 1--24.
+\url{https://www.jstatsoft.org/article/view/v050c02}.
+
+Aizaki H (2019) support.BWS3: Tools for Case 3 Best-Worst Scaling. R package version 0.2-0.
+\url{https://CRAN.R-project.org/package=support.BWS3}.
+
+Aizaki H (2023) support.CEs: Basic Functions for Supporting an Implementation of Choice Experiments.
+R package version 0.6-0. 
+\url{https://CRAN.R-project.org/package=support.CEs}.
+
+Fox J (2005) The R Commander: A Basic Statistics Graphical User Interface to R. 
+\emph{Journal of Statistical Software}, 14(9): 1--42. 
+\url{https://www.jstatsoft.org/article/view/v014i09}.
+
+Fox J (2017) \emph{Using the R Commander: A Point-and-Click Interface for R}.
+Chapman and Hall/CRC. 
+\url{https://socialsciences.mcmaster.ca/jfox/Books/RCommander/}
+
+Fox J, Bouchet-Valat M (2023) Rcmdr: R Commander.
+R package version 2.9-1.
+\url{https://socialsciences.mcmaster.ca/jfox/Misc/Rcmdr/}.
+
+Louviere JJ, Flynn TN, Marley AAJ (2015) \emph{Best--Worst Scaling: Theory, Methods and Applications}.
+Cambridge University Press.
+
+Therneau T (2023) survival: Survival Analysis.
+R package version 3.5-7.
+\url{https://CRAN.R-project.org/package=survival}.
+
+Therneau TM, Grambsch PM (2000) \emph{Modeling Survival Data: Extending the Cox Model}.
+Springer.
+}
+
+\examples{
+if(interactive()) {
+  library(RcmdrPlugin.BWS3)
+}
+}
+
+\keyword{
+package
+}
+

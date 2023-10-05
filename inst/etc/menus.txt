@@ -1,0 +1,11 @@
+# type  menu/item  operation/parent  label                              command/menu         activation         install?
+menu    bws3Menu   topMenu           ""                                 ""                   ""                 ""
+item    bws3Menu   command           "Design choice sets..."            bws3Design           ""                 "packageAvailable('support.CEs')"
+item    bws3Menu   command           "Import choice sets..."            loadBws3Design       ""                 "packageAvailable('support.CEs')"
+item    bws3Menu   command           "Display questions..."             bws3Questions        ""                 "packageAvailable('support.CEs')"
+item    bws3Menu   command           "Create data set for analysis..."  bws3Dataset          "activeDataSetP()" "packageAvailable('support.BWS3')"
+item    bws3Menu   command           "Import data set for analysis..."  loadBws3Dataset      ""                 "packageAvailable('support.BWS3')"
+item    bws3Menu   command           "Fit model..."                     bws3Fitmodel         "bws3dataP()"      "packageAvailable('survival')"
+item    bws3Menu   command           "Calculate MWTPs..."               bws3Mwtp             "clogitP()"        "packageAvailable('support.CEs')"
+item    topMenu    cascade           "BWS3"                             bws3Menu             ""                 "packageAvailable('support.BWS3')"
+
