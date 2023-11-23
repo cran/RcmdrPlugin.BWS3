@@ -1,5 +1,11 @@
 Changes to package RcmdrPlugin.BWS3
 
+2023-11-23, version 0.2-0
+- Removed two dialog boxes for import.
+- Modified the remaining dialog boxes.
+- Added a new dialog box for creating interactions.
+- Added a new dialog box for loading saved objects.
+
 2023-10-04, version 0.1-0
 - First release to CRAN
 

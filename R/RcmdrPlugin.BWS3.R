@@ -40,7 +40,6 @@ bws3Design <- function() {
     saveVariable = "0")
   dialog.values <- getDialog("bws3Design", defaults)
 
-  if(is.null(getDialog("bws3Design"))) putRcmdr("savedTableAttributes", NULL)
   
   ##### Output Frame #####
   outputFrame <- tkframe(top)
@@ -54,12 +53,13 @@ bws3Design <- function() {
   inputsFrame       <- tkframe(top)
   designMethodFrame <- tkframe(inputsFrame)
   AltBlkRngFrame    <- tkframe(inputsFrame)
+  RNGFrame          <- tkframe(inputsFrame)
   RNGoptionFrame    <- tkframe(inputsFrame)
   TABLEFrame        <- tkframe(inputsFrame)
   tableFrame        <- tkframe(TABLEFrame)
   rightFrame        <- tkframe(TABLEFrame)
   AttrCheckBoxFrame <- tkframe(rightFrame)
-  saveFrame         <- tkframe(inputsFrame)
+  saveFrame        <- tkframe(inputsFrame)
   
   # Design method
   radioButtons(
@@ -84,7 +84,7 @@ bws3Design <- function() {
 
   # Seed for RNG
   RNGseedName <- tclVar(dialog.values$RNGseedName)
-  RNGseed     <- ttkentry(AltBlkRngFrame,
+  RNGseed     <- ttkentry(RNGFrame,
                           width = "10",
                           textvariable = RNGseedName)
 
@@ -102,7 +102,7 @@ bws3Design <- function() {
   nrows <- 6
   ncols <- 7
 
-  initial.table <- getRcmdr("savedTableAttributes")
+  initial.table <- getRcmdr("savedTable")
   
   ## Names of columns
   make.col.names <- "labelRcmdr(.tableFrame, text='')"
@@ -163,7 +163,6 @@ bws3Design <- function() {
   saveVariable <- tclVar(dialog.values$saveVariable)
   saveCheckBox <- ttkcheckbutton(saveFrame, variable = saveVariable)
   
-  
   ##### onOK Function #####
   onOK <- function() {
 
@@ -199,7 +198,7 @@ bws3Design <- function() {
     }
 
     # Store the table of attributes and levels into savedTable 
-    putRcmdr("savedTableAttributes", varNames) 
+    putRcmdr("savedTable", varNames) 
     
     # Variables for attributes and levels
     attributeNames <- varNames[, 1]
@@ -282,23 +281,24 @@ bws3Design <- function() {
             sep = ""))
     doItAndPrint(paste(tclvalue(designName)))
     
-    # Save the resultant choice sets
-    if(tclvalue(saveVariable) == 1){
+    # Save choice sets
+    if (tclvalue(saveVariable) == 1) {
       saveFile <- tclvalue(tkgetSaveFile(
         filetypes = gettextRcmdr(
-          '{"All Files" {"*"}} {"RDS Files" {".RDS" ".rds"}}'),
-        defaultextension = ".RDS",
-        initialfile = paste0(tclvalue(designName), ".RDS"),
+          ' {"R Data Files" {".rda" ".RDA" ".rdata" ".RData"}}'),
+        defaultextension = ".rda",
+        initialfile = paste0(tclvalue(designName), ".rda"),
         parent = CommanderWindow()))
-      if(saveFile == ""){
+      if (saveFile == "") {
         tkfocus(CommanderWindow())
         return()
       }
-      command <- paste0('saveRDS(', tclvalue(designName), ', "',
-                        saveFile, '")')
-      justDoIt(command)
-      logger(command)
-      Message(paste(gettextRcmdr("BWS3 design exported to file"), saveFile),
+      cmd <- paste0('save(', tclvalue(designName),
+                    ', file = "', saveFile, '")')
+      justDoIt(cmd)
+      logger(cmd)
+      Message(paste0(gettextRcmdr("BWS3 design was exported to file: "),
+                     saveFile),
               type = "note")
     }
     
@@ -325,6 +325,13 @@ bws3Design <- function() {
   tkgrid(designmethodFrame, sticky = "w")
   tkgrid(designMethodFrame, sticky = "w")
 
+  ## Design parameter
+  tkgrid(
+    labelRcmdr(
+      AltBlkRngFrame,
+      text = gettextRcmdr("Design parameters:")),
+    sticky = "w")
+
   ## Number of alternatives per set
   tkgrid(
     labelRcmdr(
@@ -336,23 +343,8 @@ bws3Design <- function() {
   tkgrid(labelRcmdr(AltBlkRngFrame,
                     text = gettextRcmdr("Number of blocks ")),
          nBlocks, sticky = "w")
-
-  ## Seed for RNG
-  tkgrid(labelRcmdr(
-           AltBlkRngFrame,
-           text = gettextRcmdr("Seed for random number generator (optional) ")),
-         RNGseed, sticky = "w")
   tkgrid(AltBlkRngFrame, sticky = "w")
 
-  ## RNG option
-  tkgrid(
-    RNGoptionCheckBox,
-      labelRcmdr(
-        RNGoptionFrame,
-        text = gettextRcmdr("Reproduce choice sets designed with R < 3.6.0")),
-    sticky = "w")
-  tkgrid(RNGoptionFrame, sticky = "w")
-  
   ## Table
   tkgrid(labelRcmdr(
     inputsFrame,
@@ -372,14 +364,39 @@ bws3Design <- function() {
   tkgrid(rightFrame, tableFrame, sticky = "ew")
   tkgrid(TABLEFrame, sticky = "ew")
 
-  ## Save
-  tkgrid(labelRcmdr(inputsFrame, text = gettextRcmdr("")), sticky = "w")
-  tkgrid(saveCheckBox,
-         labelRcmdr(saveFrame, 
-           text = gettextRcmdr("Save the choice sets as RDS file")), 
+  ## Reproducibility
+  tkgrid(labelRcmdr(
+           RNGFrame,
+           text = gettextRcmdr("Reproducibility:")),
          sticky = "w")
-  tkgrid(saveFrame, sticky = "w")
 
+  ## Seed for RNG
+  tkgrid(labelRcmdr(
+           RNGFrame,
+           text = gettextRcmdr("Seed for random number generator (optional) ")),
+         RNGseed, sticky = "w")
+  tkgrid(RNGFrame, sticky = "w")
+
+  ## RNG option
+  tkgrid(
+    RNGoptionCheckBox,
+      labelRcmdr(
+        RNGoptionFrame,
+        text = gettextRcmdr("Reproduce choice sets designed with R < 3.6.0")),
+    sticky = "w")
+  tkgrid(RNGoptionFrame, sticky = "w")
+  
+  # Blank line
+  tkgrid(labelRcmdr(inputsFrame, text = ""))
+
+  # Save choice sets
+  tkgrid(
+    saveCheckBox,
+      labelRcmdr(
+        saveFrame,
+        text = gettextRcmdr("Save the resultant choice sets")),
+    sticky = "w")
+  tkgrid(saveFrame, sticky = "w")
     
   tkgrid(inputsFrame, sticky = "w")
 
@@ -394,7 +411,6 @@ resetBws3Table <- function() {
   putDialog("bws3Design", NULL)
   bws3Design()
 }
-
 ###############################################################################
 
 bws3Questions <- function() {
@@ -419,9 +435,7 @@ bws3Questions <- function() {
 
     closeDialog()
 
-    doItAndPrint(paste("questionnaire(choice.experiment.design = ",
-                       designValue, ", common = NULL, quote = TRUE)", 
-                       sep = ""))
+    doItAndPrint(paste0("questionnaire(", designValue, ")"))
     tkfocus(CommanderWindow())
   }
 
@@ -435,131 +449,9 @@ bws3Questions <- function() {
   # Name of design
   tkgrid(labelRcmdr(
     inputsFrame,
-    text = gettextRcmdr("Name of design ")),
+    text = gettextRcmdr("Design ")),
     design, sticky = "w")
   tkgrid(inputsFrame, sticky = "w")
-  
-  # OK Cancel Help Buttons
-  tkgrid(buttonsFrame, columnspan = 2, sticky = "w")
-
-  dialogSuffix()
-}
-
-###############################################################################
-
-loadBws3Design <- function() {
-  initializeDialog(title = gettextRcmdr("Import BWS3 Choice Sets"))
-  defaults <- list(designmatrixName = "BWS3design")
-  dialog.values <- getDialog("bws3ChoiceSets", defaults)
-  
-  env <- environment()
-  
-  
-  ##### Output Frame #####
-  outputFrame <- tkframe(top)
-  
-  designmatrixName <- tclVar(dialog.values$designmatrixName)
-  designmatrix     <- ttkentry(outputFrame, width = "20", 
-                               textvariable = designmatrixName)
-  
-  
-  ##### onOK function #####
-  onOK <- function() {
-    
-    putDialog("bws3ChoiceSets", list(
-      designmatrixName = tclvalue(designmatrixName)))
-    
-    closeDialog()
-    
-    file <- tclvalue(tkgetOpenFile(filetypes = 
-              gettextRcmdr(' {"RDS Files" {".RDS" ".rds"}} {"All Files" {"*"}}')))
-
-    if (file == "") {
-      return()
-    }
-
-    setBusyCursor()
-    on.exit(setIdleCursor())
-    
-    doItAndPrint(paste0(tclvalue(designmatrixName), ' <- readRDS("', 
-                         file, '")'))
-    
-    tkfocus(CommanderWindow())
-  }
-  
-  
-  ##### Specification of dialog box #####
-  # Ok Cancel Help Buttons 
-  OKCancelHelp(helpSubject = "readRDS",
-               reset       = "loadBws3Design")
-  
-  # Output
-  tkgrid(
-    labelRcmdr(outputFrame,
-               text = gettextRcmdr("Name for choice sets ")),
-    designmatrix, sticky = "w")
-  tkgrid(outputFrame, sticky = "w")
-  
-  # OK Cancel Help Buttons
-  tkgrid(buttonsFrame, columnspan = 2, sticky = "w")
-
-  dialogSuffix()
-}
-
-###############################################################################
-
-loadBws3Dataset <- function() {
-  initializeDialog(title = gettextRcmdr("Import BWS3 Data Set"))
-  defaults <- list(designmatrixName = "BWS3data")
-  dialog.values <- getDialog("bws3LoadDataSet", defaults)
-  
-  env <- environment()
-  
-  
-  ##### Output Frame #####
-  outputFrame <- tkframe(top)
-  
-  designmatrixName <- tclVar(dialog.values$designmatrixName)
-  designmatrix     <- ttkentry(outputFrame, width = "20", 
-                               textvariable = designmatrixName)
-  
-  
-  ##### onOK function #####
-  onOK <- function() {
-    
-    putDialog("bws3LoadDataSet", list(
-      designmatrixName = tclvalue(designmatrixName)))
-    
-    closeDialog()
-    
-    file <- tclvalue(tkgetOpenFile(filetypes = 
-              gettextRcmdr(' {"RDS Files" {".RDS" ".rds"}} {"All Files" {"*"}}')))
-
-    if (file == "") {
-      return()
-    }
-
-    setBusyCursor()
-    on.exit(setIdleCursor())
-    
-    doItAndPrint(paste0(tclvalue(designmatrixName), ' <- readRDS("', 
-                         file, '")'))
-    
-    tkfocus(CommanderWindow())
-  }
-  
-  
-  ##### Specification of dialog box #####
-  # Ok Cancel Help Buttons 
-  OKCancelHelp(helpSubject = "readRDS",
-               reset       = "loadBws3Dataset")
-  
-  # Output
-  tkgrid(
-    labelRcmdr(outputFrame,
-               text = gettextRcmdr("Name for data set ")),
-    designmatrix, sticky = "w")
-  tkgrid(outputFrame, sticky = "w")
   
   # OK Cancel Help Buttons
   tkgrid(buttonsFrame, columnspan = 2, sticky = "w")
@@ -582,6 +474,7 @@ bws3Dataset <- function() {
     saveVariable           = "0")
   dialog.values <- getDialog("bws3Dataset", defaults)
 
+  if(is.null(getDialog("bws3Dataset"))) putRcmdr("savedTableBWS3dataset", NULL)
 
   ###### Output frame
   outputFrame      <- tkframe(top)
@@ -713,7 +606,7 @@ bws3Dataset <- function() {
     tkgrid(get(".tableFrame", envir = env), sticky = "ew", padx = 6)
   }
 
-  ini.table <- getRcmdr("savedTable")
+  ini.table <- getRcmdr("savedTableBWS3dataset")
 
   # slider: number of questions
   if (is.null(ini.table)) {
@@ -772,7 +665,7 @@ bws3Dataset <- function() {
       }
     }
 
-    putRcmdr("savedTable", BWvarNamesTable)
+    putRcmdr("savedTableBWS3dataset", BWvarNamesTable)
 
     BWvarNamesList <- vector("list", nrow(BWvarNamesTable))
     for(i in 1:nrow(BWvarNamesTable)) {
@@ -805,32 +698,36 @@ bws3Dataset <- function() {
         ", optout = ", cmd.optout,
         ", asc = ", cmd.asc,
         ", model = 'maxdiff')"))
+        
+    activeDataSet(tclvalue(datasetName))
 
     if(tclvalue(saveVariable) == 1) {
       saveFile <- tclvalue(tkgetSaveFile(
         filetypes = gettextRcmdr(
-          '{"All Files" {"*"}} {RDS Files" {".RDS" ".rds"}}'),
-        defaultextension = ".RDS",
-        initialfile = paste(tclvalue(datasetName), ".RDS", sep = ""),
+          ' {"R Data Files" {".rda" ".RDA" ".rdata" ".RData"}}'),
+        defaultextension = ".rda",
+        initialfile = paste0(tclvalue(datasetName), ".rda"),
         parent = CommanderWindow()))
       if(saveFile == "") {
         tkfocus(CommanderWindow())
         return()
       }
-      command <- paste('saveRDS(', tclvalue(datasetName),
-                       ', "', saveFile, '")', sep = "")
+      command <- paste0('save(', tclvalue(datasetName),
+                        ', file = "', saveFile, '")')
       justDoIt(command)
       logger(command)
-      Message(paste(gettextRcmdr("Dataset for BWS3 analysis exported to file"),
-                    saveFile),
-              type = "note")
+      Message(
+        paste(
+          gettextRcmdr("Dataset for BWS3 analysis was exported to file: "),
+          saveFile),
+        type = "note")
     }
 
     tkfocus(CommanderWindow())
   }
 
 
-  OKCancelHelp(helpSubject = "bws.dataset",
+  OKCancelHelp(helpSubject = "bws3.dataset",
                reset       = "resetBws3Dataset",
                apply       = "bws3Dataset")
 
@@ -844,7 +741,7 @@ bws3Dataset <- function() {
 
   # Inputs
   tkgrid(labelRcmdr(objectsFrame,
-    text = gettextRcmdr("Name of design")),
+    text = gettextRcmdr("Design")),
     design, sticky = "w")
   tkgrid(labelRcmdr(objectsFrame,
     text = gettextRcmdr("ID variable")),
@@ -860,13 +757,13 @@ bws3Dataset <- function() {
   tkgrid(letterFrame, sticky = "w")
 
   tkgrid(optoutCheckBox,
-         labelRcmdr(optoutFrame, text = gettextRcmdr("Use opt-out option")),
+         labelRcmdr(optoutFrame, text = gettextRcmdr("Opt-out option")),
          sticky = "w")
   tkgrid(optoutFrame, sticky = "w")
 
   tkgrid(labelRcmdr(saveFrame, text = gettextRcmdr("")), sticky = "w")
   tkgrid(saveCheckBox,
-         labelRcmdr(saveFrame, text = gettextRcmdr("Save the data sets as RDS file")),
+         labelRcmdr(saveFrame, text = gettextRcmdr("Save the data sets")),
          sticky = "w")
   tkgrid(saveFrame, sticky = "w")
 
@@ -890,9 +787,100 @@ bws3Dataset <- function() {
 }
 
 resetBws3Dataset <- function(){
-  putRcmdr("savedTable", NULL)
+  putRcmdr("savedTableBWS3dataset", NULL)
   putDialog("bws3Dataset", NULL)
   bws3Dataset()
+}
+
+###############################################################################
+
+bws3Interact <- function() {
+  initializeDialog(
+    title = 
+      gettextRcmdr("Create Interactions Between Attributes/Levels and Covariates"))
+
+  ##### Input Frame #####
+  inputFrame      <- tkframe(top)
+  attrlvlVarFrame <- tkframe(inputFrame)
+  covariateFrame  <- tkframe(inputFrame)
+
+  # ASC
+  ascPosition <-
+    eval(parse(text = paste0("attr(", activeDataSet(), ", 'asc')")))
+  ascVarVec   <-
+    eval(parse(text = paste0("attr(", activeDataSet(), ", 'asc.names')")))
+  asc <- ascVarVec[as.logical(ascPosition)]
+  
+  # ASC + Attribute/level variables
+  attrlvlVarVec <- 
+    eval(parse(text = paste0("attr(", activeDataSet(), ", 'level.variables')")))
+  attrlvlVarVec <- c(asc, attrlvlVarVec)
+  attrlvlVarBox <- variableListBox(
+    attrlvlVarFrame,
+    attrlvlVarVec,
+    title = "Attribute/level variables \n(pick one or more)",
+    selectmode = "multiple",
+    listHeight = 10)
+  
+  # Covariates
+  covariateVec <- eval(parse(text = paste0("attr(", activeDataSet(),
+                                            ", 'covariates')")))
+  covariateBox <- variableListBox(
+    covariateFrame,
+    covariateVec,
+    title = "Covariates \n(pick one or more)",
+    selectmode = "multiple",
+    listHeight = 10)
+  
+  
+  ##### onOK function #####
+  onOK <- function() {
+    attrlvlVar   <- getSelection(attrlvlVarBox)
+    covariateVar <- getSelection(covariateBox)
+    
+  closeDialog()
+  
+  interactionVars <- NULL
+  for (i in attrlvlVar) {
+    for (j in covariateVar) {
+      doItAndPrint(paste0(activeDataSet(), "$", i, "_", j, " <- ", 
+                          activeDataSet(), "$", i, " * ", 
+                          activeDataSet(), "$", j))
+      interactionVars <- c(interactionVars, paste0("'", i, "_", j, "'"))
+    }
+  }
+  
+  justDoIt(paste0("attributes(", activeDataSet(), ")$interactions <- c(", 
+                  paste(interactionVars, collapse = ", "), ")"))
+  
+  activeDataSet(activeDataSet(),
+                flushModel = FALSE,
+                flushDialogMemory = FALSE)
+
+  tkfocus(CommanderWindow())
+  }
+
+  ##### Specification of dialog box #####
+  # Ok Cancel Help Buttons
+  OKCancelHelp(helpSubject = "bws3.dataset",
+               reset       = "bws3Interact",
+               apply       = "bws3Interact")
+
+  # Attribute/level variabels
+  tkgrid(getFrame(attrlvlVarBox), sticky = "w")
+  
+  # Covariates
+  tkgrid(getFrame(covariateBox), sticky = "w")
+
+  tkgrid(attrlvlVarFrame, labelRcmdr(inputFrame, text = "   "),
+         covariateFrame, sticky = "nw")
+  
+  tkgrid(inputFrame, sticky = "w")
+  
+  # OK Cancel Help Buttons
+  tkgrid(buttonsFrame, columnspan = 2, sticky = "w")
+  
+  dialogSuffix()
 }
 
 ###############################################################################
@@ -941,7 +929,7 @@ bws3Fitmodel <- function() {
   ##### Output Frame #####
   # Name for fitted model
   UpdateModelNumber()
-  modelName  <- tclVar(paste("BWS3model.", getRcmdr("modelNumber"), sep = ""))
+  modelName  <- tclVar(paste0("BWS3model.", getRcmdr("modelNumber")))
   modelFrame <- tkframe(top)
   model      <- ttkentry(modelFrame, width = "20", textvariable = modelName)
 
@@ -949,36 +937,43 @@ bws3Fitmodel <- function() {
   ##### Input Frame #####
   # Response variable
   responseVarFrame <- tkframe(top)
-  responseVarBox <- variableComboBox(
-    responseVarFrame,
-    Variables(),
-    initialSelection = dialog.values$ini.responseVarName,
-    title = "Response variable")
+  responseVarName  <- tclVar(dialog.values$ini.responseVarName)
+  responseVar      <- ttkentry(responseVarFrame, width = "5",
+                               textvariable = responseVarName)
 
   # Independent variables
+  indVarVec <- 
+    eval(parse(text = paste0("attr(", activeDataSet(), ", 'level.variables')")))
+  interactionVec <- 
+    eval(parse(text = paste0("attr(", activeDataSet(), ", 'interactions')")))
+  ascPosition <-
+    eval(parse(text = paste0("attr(", activeDataSet(), ", 'asc')")))
+  ascVarVec <-
+    eval(parse(text = paste0("attr(", activeDataSet(), ", 'asc.names')")))
+  asc <- ascVarVec[as.logical(ascPosition)]
+  allIndVarVec <- c(asc, indVarVec, interactionVec)
+
   independentVarFrame <- tkframe(top)
   independentVarBox <- variableListBox(
     independentVarFrame,
-    Variables(),
-    title = "Independent variables (pick one or more)",
+    allIndVarVec,
+    title = "Independent variables \n(pick one or more)",
     selectmode = "multiple",
-    listHeight = 5)
+    listHeight = 10)
 
   # Stratification variable
   strataFrame    <- tkframe(top)
   strataVarFrame <- tkframe(strataFrame)
-  strataVarBox   <- variableComboBox(
-    strataVarFrame,
-    Variables(),
-    initialSelection = dialog.values$ini.strataVarName,
-    title = "Stratification variable")
+  strataVarName  <- tclVar(dialog.values$ini.strataVarName)
+  strataVar      <- ttkentry(strataVarFrame, width = "5",
+                             textvariable = strataVarName)
 
     
   ##### onOK function #####
   onOK <- function () {
 
-    responseVar <- getSelection(responseVarBox)
-    strataVar   <- getSelection(strataVarBox)
+    responseVar <- trim.blanks(tclvalue(responseVarName))
+    strataVar   <- trim.blanks(tclvalue(strataVarName))
     indVar      <- getSelection(independentVarBox)
     if(length(indVar) == 0) covVar <- "1"
     
@@ -996,7 +991,7 @@ bws3Fitmodel <- function() {
       subset <- ""
       putRcmdr("modelWithSubset", FALSE)
     } else {
-      subset <- paste(", subset = ", subset, sep = "")
+      subset <- paste0(", subset = ", subset)
       putRcmdr("modelWithSubset", TRUE)
     }
 
@@ -1032,21 +1027,20 @@ bws3Fitmodel <- function() {
   tkgrid(labelRcmdr(top, text = ""))
 
   # Input
-  ## Title
-  tkgrid(labelRcmdr(top, text = gettextRcmdr("Model formula"),
-                    fg = getRcmdr("title.color"), font = "RcmdrTitleFont"),
-         sticky = "w")
-
   ## Response variable
-  tkgrid(getFrame(responseVarBox), sticky = "w")
+  tkgrid(labelRcmdr(responseVarFrame,
+                    text = gettextRcmdr("Response variable ")),
+         responseVar, sticky = "w")
   tkgrid(responseVarFrame, sticky = "w")
 
-  ## Independent variables
+  ## Independent variables (Modified 0.1-3)
   tkgrid(getFrame(independentVarBox), sticky = "w")
   tkgrid(independentVarFrame, sticky = "w")
 
   ## Stratification variable
-  tkgrid(getFrame(strataVarBox), sticky = "w")
+  tkgrid(labelRcmdr(strataVarFrame,
+                    text = gettextRcmdr("Stratification variable ")),
+         strataVar, sticky = "w")
   tkgrid(strataVarFrame, sticky = "w")
   tkgrid(strataFrame, sticky = "w")
 
@@ -1270,6 +1264,30 @@ bws3Mwtp <- function() {
   tkgrid(buttonsFrame, columnspan = 2, sticky = "w")
   
   dialogSuffix()
+}
+
+###############################################################################
+
+bws3Load <- function() {
+  file <- 
+    tclvalue(
+      tkgetOpenFile(
+        filetype = 
+          gettextRcmdr(' {"R Data Files" {".rda" ".RDA" ".rdata" ".RData"}}')))
+  if (file == "") {
+    return()
+  }
+  setBusyCursor()
+  on.exit(setIdleCursor())
+
+  cmd <- paste0('load("', file, '")')
+  loadedObject <- justDoIt(cmd)
+  logger(cmd)
+  Message(paste0(gettextRcmdr("Name of loaded object: "),
+          paste(loadedObject, collapse = ", ")),
+          type = "note")
+
+  tkfocus(CommanderWindow())
 }
 
 ###############################################################################

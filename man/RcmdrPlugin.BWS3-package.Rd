@@ -6,10 +6,10 @@
 \alias{resetBws3Table}
 \alias{bws3Questions}
 \alias{bws3DesignMatrix}
-\alias{loadBws3Design}
+\alias{bws3Interact}
 \alias{bws3Dataset}
 \alias{resetBws3Dataset}
-\alias{loadBws3Dataset}
+\alias{bws3Load}
 \alias{bws3Fitmodel}
 \alias{resetBws3Model}
 \alias{bws3Mwtp}
@@ -52,10 +52,6 @@ choice sets for BWS3 with the rotation design method or mix-and-match method
 using the function \code{\link[support.CEs]{rotation.design}} 
 in \pkg{\link{support.CEs}}.
 
-   \item The dialog box for \dQuote{Import choice sets...} read an RDS file 
-containing the choice sets saved in the first dialog box using 
-the function \code{\link[base]{readRDS}} in \pkg{\link{base}}. 
-
    \item The dialog box for \dQuote{Display questions...} 
 shows BWS3 questions that are converted from the choice sets designed in the first dialog box 
 using the function \code{\link[support.CEs]{questionnaire}} in \pkg{\link{support.CEs}}.
@@ -68,10 +64,10 @@ The current version assumes that a maximum difference model is used.
 The menu item \dQuote{Create data set for analysis...} is activated 
 if a data set is selected as the active data set.
 
-
-   \item The dialog box for \dQuote{Import data set for analysis...} 
-read an RDS file containing the data set for analysis created in the previous daialog box 
-using the function \code{\link[base]{readRDS}} in \pkg{\link{base}}. 
+   \item The dialog box for \dQuote{Create interactions...} creates 
+interactions between attribute/level variables and covariates in the data set for analysis.
+The menu item is activated if the data set for analysis created in the previous daialog box 
+is selected as the active data set.
 
    \item The dialog box for \dQuote{Fit model...} implements a conditional 
 logit model analysis of the data set for analysis created in the previous 
@@ -87,6 +83,11 @@ from the model fitted in the previous dialog box using the function
 \code{\link[support.CEs]{mwtp}} in \pkg{\link{support.CEs}}. The menu item 
 \dQuote{Calculate MWTPs...} is activated if the active model is of 
 class \code{"clogit"}.
+
+   \item The dialog box for \dQuote{Load saved objects...} loads 
+an R Data (rda) file saved in the dialog box for 
+\dQuote{Design choice sets...} or \dQuote{Create data set for analysis...} 
+using the function \code{\link[base]{load}} in \pkg{\link{base}}. 
 
 }
 }
