@@ -1,5 +1,8 @@
 Changes to package RcmdrPlugin.BWS3
 
+2023-12-06, version 0.2-1
+- Modified dialog boxes for designing choice sets, creating data set, and fitting model.
+
 2023-11-23, version 0.2-0
 - Removed two dialog boxes for import.
 - Modified the remaining dialog boxes.
@@ -7,5 +10,5 @@ Changes to package RcmdrPlugin.BWS3
 - Added a new dialog box for loading saved objects.
 
 2023-10-04, version 0.1-0
-- First release to CRAN
+- First release to CRAN.
 
