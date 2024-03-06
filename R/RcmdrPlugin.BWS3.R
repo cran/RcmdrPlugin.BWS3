@@ -309,7 +309,7 @@ bws3Design <- function() {
 
   ##### Specification of dialog box #####
   # Ok Cancel Help Buttons 
-  OKCancelHelp(helpSubject = "rotation.design",
+  OKCancelHelp(helpSubject = "bws3Design",
                reset       = "resetBws3Table",
                apply       = "bws3Design")
   # Output
@@ -444,7 +444,7 @@ bws3Questions <- function() {
   
   ##### Specification of dialog box #####
   # Ok Cancel Help Buttons 
-  OKCancelHelp(helpSubject = "questionnaire",
+  OKCancelHelp(helpSubject = "bws3Questions",
                reset       = "bws3Questions",
                apply       = NULL)
 
@@ -729,7 +729,7 @@ bws3Dataset <- function() {
   }
 
 
-  OKCancelHelp(helpSubject = "bws3.dataset",
+  OKCancelHelp(helpSubject = "bws3Dataset",
                reset       = "resetBws3Dataset",
                apply       = "bws3Dataset")
 
@@ -797,10 +797,10 @@ resetBws3Dataset <- function(){
 
 ###############################################################################
 
-bws3Interact <- function() {
+bws3Interactions <- function() {
   initializeDialog(
     title = 
-      gettextRcmdr("Create Interactions Between Attributes/Levels and Covariates"))
+      gettextRcmdr("Create Interactions between Attributes/Levels and Covariates"))
 
   ##### Input Frame #####
   inputFrame      <- tkframe(top)
@@ -865,9 +865,9 @@ bws3Interact <- function() {
 
   ##### Specification of dialog box #####
   # Ok Cancel Help Buttons
-  OKCancelHelp(helpSubject = "bws3.dataset",
-               reset       = "bws3Interact",
-               apply       = "bws3Interact")
+  OKCancelHelp(helpSubject = "bws3Interactions",
+               reset       = "bws3Interactions",
+               apply       = "bws3Interactions")
 
   # Attribute/level variabels
   tkgrid(getFrame(attrlvlVarBox), sticky = "w")
@@ -888,12 +888,12 @@ bws3Interact <- function() {
 
 ###############################################################################
 
-bws3Fitmodel <- function() {
-  initializeDialog(title = gettextRcmdr("Fit Conditional Logit Model"))
+bws3Model <- function() {
+  initializeDialog(title = gettextRcmdr("Fit Model to BWS3 Data"))
   defaults <- list(
     ini.responseVarName = "RES",
     ini.strataVarName   = "STR")
-  dialog.values <- getDialog("bws3Fitmodel", defaults)
+  dialog.values <- getDialog("bws3Model", defaults)
 
   if (!any(Variables() == dialog.values$ini.responseVarName)) {
     dialog.values$ini.responseVarName = gettextRcmdr("<no variable selected>")
@@ -980,7 +980,7 @@ bws3Fitmodel <- function() {
     indVar      <- getSelection(independentVarBox)
     if(length(indVar) == 0) covVar <- "1"
     
-    putDialog("bws3Fitmodel", list(
+    putDialog("bws3Model", list(
       ini.responseVarName = responseVar,
       ini.strataVarName   = strataVar))
     
@@ -1016,10 +1016,10 @@ bws3Fitmodel <- function() {
   
   ##### Specification of dialog box #####
   # Ok Cancel Help Buttons 
-  OKCancelHelp(helpSubject = "clogit",
+  OKCancelHelp(helpSubject = "bws3Model",
                model       = TRUE,
                reset       = "resetBws3Model",
-               apply       = "bws3Fitmodel")
+               apply       = "bws3Model")
 
   # Output
   tkgrid(labelRcmdr(modelFrame, text = gettextRcmdr("Name for model ")),
@@ -1068,16 +1068,16 @@ bws3Fitmodel <- function() {
 
 resetBws3Model <- function(){
   putRcmdr("reset.model", TRUE)
-  putDialog("bws3Fitmodel", NULL)
-  putDialog("bws3Fitmodel", NULL, resettable = FALSE)
-  bws3Fitmodel()
+  putDialog("bws3Model", NULL)
+  putDialog("bws3Model", NULL, resettable = FALSE)
+  bws3Model()
 }
 
 ###############################################################################
 
 bws3Mwtp <- function() {
   initializeDialog(
-    title = gettextRcmdr("Calculate Marginal Willingness To Pays"))
+    title = gettextRcmdr("Calculate Marginal Willingness to Pay"))
   defaults <- list(
     outputName    = "MWTP",
     moneyName     = gettextRcmdr("<no variable selected>"),
@@ -1215,7 +1215,7 @@ bws3Mwtp <- function() {
   
   ##### Specification of dialog box #####
   # Ok Cancel Help Buttons 
-  OKCancelHelp(helpSubject = "mwtp",
+  OKCancelHelp(helpSubject = "bws3Mwtp",
                reset       = "bws3Mwtp",
                apply       = "bws3Mwtp")
 
@@ -1305,7 +1305,7 @@ clogitP <- function() {
   activeModelP() && class(get(ActiveModel()))[1] == "clogit"
 }
 
-bws3dataP <- function() {
+bws3DataP <- function() {
   activeDataSetP() && class(get(ActiveDataSet()))[1] == "bws3dataset"
 }
 

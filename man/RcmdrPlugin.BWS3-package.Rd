@@ -2,19 +2,7 @@
 \name{RcmdrPlugin.BWS3-package}
 \alias{RcmdrPlugin.BWS3-package}
 \alias{RcmdrPlugin.BWS3}
-\alias{bws3Design}
-\alias{resetBws3Table}
-\alias{bws3Questions}
-\alias{bws3DesignMatrix}
-\alias{bws3Interact}
-\alias{bws3Dataset}
-\alias{resetBws3Dataset}
 \alias{bws3Load}
-\alias{bws3Fitmodel}
-\alias{resetBws3Model}
-\alias{bws3Mwtp}
-\alias{clogitP}
-\alias{bws3dataP}
 
 \title{R Commander Plug-in for Case 3 Best-Worst Scaling}
 
@@ -35,60 +23,59 @@ scaling (BWS3). It depends on \pkg{\link{support.BWS3}} (Aizaki 2019),
 \pkg{survival} (Therneau 2023; Therneau and Grambsch 2000), and 
 \pkg{\link{Rcmdr}} (Fox 2005, 2017; Fox and Bouchet-Valat 2023). 
 Refer to Aizaki (2019) and 
-\dQuote{Non-Market Valuation with R} <\url{http://lab.agr.hokudai.ac.jp/nmvr/}> 
+\sQuote{Non-Market Valuation with R} <\url{http://lab.agr.hokudai.ac.jp/nmvr/}> 
 for a brief introduction to BWS3 in R.
 
-After successfully installing and loading the \pkg{RcmdrPlugin.BWS3}, 
-the R Commander window will appear, and then you will find \dQuote{BWS3} 
+After successfully installing and loading \pkg{RcmdrPlugin.BWS3}, 
+the R Commander window will appear, and then you will find \sQuote{\code{BWS3}} 
 added to the top-level menus in the R Commander window.
 
-Selecting \dQuote{BWS3} displays menu items. When selecting a menu item, 
+Selecting \sQuote{\code{BWS3}} displays menu items. When selecting a menu item, 
 the corresponding dialog box opens. The following dialog boxes are 
 provided by \pkg{RcmdrPlugin.BWS3}:
-\itemize{
 
-   \item The dialog box for \dQuote{Design choice sets...} designs 
+\itemize{
+   \item The dialog box for \sQuote{\code{Design choice sets...}} designs 
 choice sets for BWS3 with the rotation design method or mix-and-match method 
 using the function \code{\link[support.CEs]{rotation.design}} 
 in \pkg{\link{support.CEs}}.
 
-   \item The dialog box for \dQuote{Display questions...} 
+   \item The dialog box for \sQuote{\code{Display questions...}} 
 shows BWS3 questions that are converted from the choice sets designed in the first dialog box 
 using the function \code{\link[support.CEs]{questionnaire}} in \pkg{\link{support.CEs}}.
 
-   \item The dialog box for \dQuote{Create data set for analysis...} 
-creates a data set for analysis from the choice sets designed in the first 
+   \item The dialog box for \sQuote{\code{Create data set for analysis...}} 
+creates a data set for BWS3 analysis from the choice sets designed in the first 
 dialog box and a data set containing responses to BWS3 questions using 
 the function \code{\link[support.BWS3]{bws3.dataset}} in \pkg{\link{support.BWS3}}. 
 The current version assumes that a maximum difference model is used. 
-The menu item \dQuote{Create data set for analysis...} is activated 
+The menu item \sQuote{\code{Create data set for analysis...}} is activated 
 if a data set is selected as the active data set.
 
-   \item The dialog box for \dQuote{Create interactions...} creates 
-interactions between attribute/level variables and covariates in the data set for analysis.
-The menu item is activated if the data set for analysis created in the previous daialog box 
+   \item The dialog box for \sQuote{\code{Create interactions...}} creates 
+interactions between attribute/level variables and covariates in the data set for BWS3 analysis.
+The menu item is activated if the data set for BWS3 analysis created in the previous daialog box 
 is selected as the active data set.
 
-   \item The dialog box for \dQuote{Fit model...} implements a conditional 
+   \item The dialog box for \sQuote{\code{Fit model...}} implements a conditional 
 logit model analysis of the data set for analysis created in the previous 
 dialog box using the functions \code{\link[survival]{clogit}} 
 in \pkg{survival} and \code{\link[support.CEs]{gofm}} 
-in \pkg{\link{support.CEs}}. The menu item \dQuote{Fit model...} is activated 
-if a data set for analysis created in the previous dialog box is selected as 
+in \pkg{\link{support.CEs}}. The menu item \sQuote{\code{Fit model...}} is activated 
+if the data set for BWS3 analysis created in the previous dialog box is selected as 
 the active data set.
 
-   \item The dialog box for \dQuote{Calculate MWTPs...} 
+   \item The dialog box for \sQuote{\code{Calculate MWTP...}} 
 calculates marginal willingness to pays (MWTPs) of non-monetary variables 
 from the model fitted in the previous dialog box using the function 
 \code{\link[support.CEs]{mwtp}} in \pkg{\link{support.CEs}}. The menu item 
-\dQuote{Calculate MWTPs...} is activated if the active model is of 
-class \code{"clogit"}.
+\sQuote{\code{Calculate MWTP...}} is activated if the fitted model is 
+selected as the active model.
 
-   \item The dialog box for \dQuote{Load saved objects...} loads 
+   \item The dialog box for \sQuote{\code{Load saved objects...}} loads 
 an R Data (rda) file saved in the dialog box for 
-\dQuote{Design choice sets...} or \dQuote{Create data set for analysis...} 
+\sQuote{\code{Design choice sets...}} or \sQuote{\code{Create data set for analysis...}} 
 using the function \code{\link[base]{load}} in \pkg{\link{base}}. 
-
 }
 }
 
