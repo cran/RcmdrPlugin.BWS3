@@ -25,21 +25,22 @@
 bws3Design <- function() {
   initializeDialog(title = gettextRcmdr("Design Choice Sets for BWS3"))
   defaults <- list(
-    designName = "BWS3design",
-    designMethod = "FALSE",
-    nAlternativesName = "2",
-    nBlocksName = "1",
-    RNGseedName = "",
-    RNGoptionVariable = "0",
-    A1Var = "0",
-    A2Var = "0",
-    A3Var = "0",
-    A4Var = "0",
-    A5Var = "0",
-    A6Var = "0",
-    saveVariable = "0")
+    ini.designName = "BWS3design",
+    ini.designMethod = "FALSE",
+    ini.nAlternativesName = "2",
+    ini.nBlocksName = "1",
+    ini.RNGseedName = "",
+    ini.RNGoptionVariable = "0",
+    ini.A1Var = "0",
+    ini.A2Var = "0",
+    ini.A3Var = "0",
+    ini.A4Var = "0",
+    ini.A5Var = "0",
+    ini.A6Var = "0",
+    ini.saveVariable = "0")
   dialog.values <- getDialog("bws3Design", defaults)
 
+  if(is.null(getDialog("bws3Design"))) putRcmdr("savedTableBws3Design", NULL)
   
   ##### Output Frame #####
   outputFrame <- tkframe(top)
@@ -47,11 +48,11 @@ bws3Design <- function() {
   saveFrame   <- tkframe(outputFrame)
 
   # Choice sets
-  designName <- tclVar(dialog.values$designName)
+  designName <- tclVar(dialog.values$ini.designName)
   design     <- ttkentry(designFrame, width = "14", 
                          textvariable = designName)
   # Save option
-  saveVariable <- tclVar(dialog.values$saveVariable)
+  saveVariable <- tclVar(dialog.values$ini.saveVariable)
   saveCheckBox <- ttkcheckbutton(saveFrame, variable = saveVariable)
 
 
@@ -72,29 +73,29 @@ bws3Design <- function() {
     name = "designmethod",
     buttons = c("FALSE", "TRUE"),
     labels = gettextRcmdr(c("Rotation", "Mix-and-Match")),
-    initialValue = dialog.values$designMethod,
+    initialValue = dialog.values$ini.designMethod,
     title = gettextRcmdr("Design method"))
 
   # Number of alternatives per set (without the output option)
-  nAlternativesName <- tclVar(dialog.values$nAlternativesName)
+  nAlternativesName <- tclVar(dialog.values$ini.nAlternativesName)
   nAlternatives     <- ttkentry(AltBlkRngFrame,
                                 width = "7",
                                 textvariable = nAlternativesName)
   
   # Number of blocks
-  nBlocksName <- tclVar(dialog.values$nBlocksName)
+  nBlocksName <- tclVar(dialog.values$ini.nBlocksName)
   nBlocks     <- ttkentry(AltBlkRngFrame,
                           width = "7",
                           textvariable = nBlocksName)
 
   # Seed for RNG
-  RNGseedName <- tclVar(dialog.values$RNGseedName)
+  RNGseedName <- tclVar(dialog.values$ini.RNGseedName)
   RNGseed     <- ttkentry(RNGFrame,
                           width = "7",
                           textvariable = RNGseedName)
 
   # RNG option
-  RNGoptionVariable <- tclVar(dialog.values$RNGoptionVariable)
+  RNGoptionVariable <- tclVar(dialog.values$ini.RNGoptionVariable)
   RNGoptionCheckBox <- ttkcheckbutton(RNGoptionFrame,
                                       variable = RNGoptionVariable)
 
@@ -107,7 +108,7 @@ bws3Design <- function() {
   nrows <- 6
   ncols <- 7
 
-  initial.table <- getRcmdr("savedTable")
+  initial.table <- getRcmdr("savedTableBws3Design")
   
   ## Names of columns
   make.col.names <- "labelRcmdr(.tableFrame, text='')"
@@ -151,17 +152,17 @@ bws3Design <- function() {
   tkgrid(get(".tableFrame", envir = env), sticky = "w")
 
   # Quantitative attributes
-  A1Var <- tclVar(dialog.values$A1Var)
+  A1Var <- tclVar(dialog.values$ini.A1Var)
   A1CheckBox <- ttkcheckbutton(AttrCheckBoxFrame, variable = A1Var)
-  A2Var <- tclVar(dialog.values$A2Var)
+  A2Var <- tclVar(dialog.values$ini.A2Var)
   A2CheckBox <- ttkcheckbutton(AttrCheckBoxFrame, variable = A2Var)
-  A3Var <- tclVar(dialog.values$A3Var)
+  A3Var <- tclVar(dialog.values$ini.A3Var)
   A3CheckBox <- ttkcheckbutton(AttrCheckBoxFrame, variable = A3Var)
-  A4Var <- tclVar(dialog.values$A4Var)
+  A4Var <- tclVar(dialog.values$ini.A4Var)
   A4CheckBox <- ttkcheckbutton(AttrCheckBoxFrame, variable = A4Var)
-  A5Var <- tclVar(dialog.values$A5Var)
+  A5Var <- tclVar(dialog.values$ini.A5Var)
   A5CheckBox <- ttkcheckbutton(AttrCheckBoxFrame, variable = A5Var)
-  A6Var <- tclVar(dialog.values$A6Var)
+  A6Var <- tclVar(dialog.values$ini.A6Var)
   A6CheckBox <- ttkcheckbutton(AttrCheckBoxFrame, variable = A6Var)
   
   
@@ -169,19 +170,19 @@ bws3Design <- function() {
   onOK <- function() {
 
     putDialog("bws3Design", list(
-      designName = tclvalue(designName),
-      designMethod = tclvalue(designmethodVariable),
-      nAlternativesName = tclvalue(nAlternativesName),
-      nBlocksName = tclvalue(nBlocksName),
-      RNGseedName = tclvalue(RNGseedName),
-      RNGoptionVariable = tclvalue(RNGoptionVariable),
-      A1Var = tclvalue(A1Var),
-      A2Var = tclvalue(A2Var),
-      A3Var = tclvalue(A3Var),
-      A4Var = tclvalue(A4Var),
-      A5Var = tclvalue(A5Var),
-      A6Var = tclvalue(A6Var),
-      saveVariable = tclvalue(saveVariable)))
+      ini.designName = tclvalue(designName),
+      ini.designMethod = tclvalue(designmethodVariable),
+      ini.nAlternativesName = tclvalue(nAlternativesName),
+      ini.nBlocksName = tclvalue(nBlocksName),
+      ini.RNGseedName = tclvalue(RNGseedName),
+      ini.RNGoptionVariable = tclvalue(RNGoptionVariable),
+      ini.A1Var = tclvalue(A1Var),
+      ini.A2Var = tclvalue(A2Var),
+      ini.A3Var = tclvalue(A3Var),
+      ini.A4Var = tclvalue(A4Var),
+      ini.A5Var = tclvalue(A5Var),
+      ini.A6Var = tclvalue(A6Var),
+      ini.saveVariable = tclvalue(saveVariable)))
     
     closeDialog()
 
@@ -200,7 +201,7 @@ bws3Design <- function() {
     }
 
     # Store the table of attributes and levels into savedTable 
-    putRcmdr("savedTable", varNames) 
+    putRcmdr("savedTableBws3Design", varNames) 
     
     # Variables for attributes and levels
     attributeNames <- varNames[, 1]
@@ -275,10 +276,10 @@ bws3Design <- function() {
             ", nblocks = ", tclvalue(nBlocksName),
             ", randomize = ", tclvalue(designmethodVariable),
             cmd.seed, sep = ""))
-    doItAndPrint(
+    justDoIt(
       paste("attributes(", tclvalue(designName), ")$contA <- ", cmd.contA,
             sep = ""))
-    doItAndPrint(
+    justDoIt(
       paste("attributes(", tclvalue(designName), ")$cateA <- ", cmd.cateA,
             sep = ""))
     doItAndPrint(paste(tclvalue(designName)))
@@ -409,7 +410,7 @@ bws3Design <- function() {
 }
 
 resetBws3Table <- function() {
-  putRcmdr("savedTable", NULL)
+  putRcmdr("savedTableBws3Design", NULL)
   putDialog("bws3Design", NULL)
   bws3Design()
 }
@@ -472,8 +473,8 @@ bws3Dataset <- function() {
     ini.designName         = "BWS3design",
     ini.idName             = "id",
     ini.letterRB           = "1",
-    optoutVariable         = "0",
-    saveVariable           = "0")
+    ini.optoutVariable         = "0",
+    ini.saveVariable           = "0")
   dialog.values <- getDialog("bws3Dataset", defaults)
 
   if(is.null(getDialog("bws3Dataset"))) putRcmdr("savedTableBWS3dataset", NULL)
@@ -489,7 +490,7 @@ bws3Dataset <- function() {
                           textvariable = datasetName)
 
   # save option
-  saveVariable <- tclVar(dialog.values$saveVariable)
+  saveVariable <- tclVar(dialog.values$ini.saveVariable)
   saveCheckBox <- ttkcheckbutton(saveFrame, variable = saveVariable)
 
 
@@ -516,7 +517,7 @@ bws3Dataset <- function() {
   id <- ttkentry(objectsFrame, width = "14", textvariable = idName)
 
   # opt-out option
-  optoutVariable <- tclVar(dialog.values$optoutVariable)
+  optoutVariable <- tclVar(dialog.values$ini.optoutVariable)
   optoutCheckBox <- ttkcheckbutton(optoutFrame, variable = optoutVariable)
 
 
@@ -634,13 +635,13 @@ bws3Dataset <- function() {
 
   onOK <- function() {
     putDialog("bws3Dataset", list(
-      ini.rowsValue   = tclvalue(rowsValue),
-      ini.datasetName = tclvalue(datasetName),
-      ini.designName  = tclvalue(designName),
-      optoutVariable  = tclvalue(optoutVariable),
-      saveVariable    = tclvalue(saveVariable),
-      ini.idName      = tclvalue(idName),
-      ini.letterRB    = tclvalue(lettertypeVariable)))
+      ini.rowsValue       = tclvalue(rowsValue),
+      ini.datasetName     = tclvalue(datasetName),
+      ini.designName      = tclvalue(designName),
+      ini.optoutVariable  = tclvalue(optoutVariable),
+      ini.saveVariable    = tclvalue(saveVariable),
+      ini.idName          = tclvalue(idName),
+      ini.letterRB        = tclvalue(lettertypeVariable)))
 
     cedes <- tclvalue(designName)
     contA <- eval(parse(text = paste0("attr(", cedes, ", 'contA')")))
@@ -802,6 +803,12 @@ bws3Interactions <- function() {
     title = 
       gettextRcmdr("Create Interactions between Attributes/Levels and Covariates"))
 
+  defaults <- list(
+    ini.attrlvlVar   = NULL,
+    ini.covariateVar = NULL)
+    
+  dialog.values <- getDialog("bws3Interactions", defaults)
+
   ##### Input Frame #####
   inputFrame      <- tkframe(top)
   attrlvlVarFrame <- tkframe(inputFrame)
@@ -823,7 +830,9 @@ bws3Interactions <- function() {
     attrlvlVarVec,
     title = "Attribute/level variables \n(pick one or more)",
     selectmode = "multiple",
-    listHeight = 10)
+    listHeight = 10,
+    initialSelection = varPosn(dialog.values$ini.attrlvlVar,
+                               vars = attrlvlVarVec))
   
   # Covariates
   covariateVec <- eval(parse(text = paste0("attr(", activeDataSet(),
@@ -833,13 +842,19 @@ bws3Interactions <- function() {
     covariateVec,
     title = "Covariates \n(pick one or more)",
     selectmode = "multiple",
-    listHeight = 10)
+    listHeight = 10,
+    initialSelection = varPosn(dialog.values$ini.covariateVar,
+                               vars = covariateVec))
   
   
   ##### onOK function #####
   onOK <- function() {
     attrlvlVar   <- getSelection(attrlvlVarBox)
     covariateVar <- getSelection(covariateBox)
+    
+  putDialog("bws3Interactions", list(
+    ini.attrlvlVar   = attrlvlVar,
+    ini.covariateVar = covariateVar))
     
   closeDialog()
   
@@ -891,8 +906,9 @@ bws3Interactions <- function() {
 bws3Model <- function() {
   initializeDialog(title = gettextRcmdr("Fit Model to BWS3 Data"))
   defaults <- list(
-    ini.responseVarName = "RES",
-    ini.strataVarName   = "STR")
+    ini.responseVarName    = "RES",
+    ini.independentVarName = NULL,
+    ini.strataVarName      = "STR")
   dialog.values <- getDialog("bws3Model", defaults)
 
   if (!any(Variables() == dialog.values$ini.responseVarName)) {
@@ -962,7 +978,9 @@ bws3Model <- function() {
     allIndVarVec,
     title = "Independent variables \n(pick one or more)",
     selectmode = "multiple",
-    listHeight = 10)
+    listHeight = 10,
+    initialSelection = varPosn(dialog.values$ini.independentVarName,
+                               vars = allIndVarVec))
 
   # Stratification variable
   strataFrame    <- tkframe(top)
@@ -981,8 +999,9 @@ bws3Model <- function() {
     if(length(indVar) == 0) covVar <- "1"
     
     putDialog("bws3Model", list(
-      ini.responseVarName = responseVar,
-      ini.strataVarName   = strataVar))
+      ini.responseVarName    = responseVar,
+      ini.independentVarName = indVar,
+      ini.strataVarName      = strataVar))
     
     modelValue  <- trim.blanks(tclvalue(modelName))
 
@@ -1301,8 +1320,10 @@ bws3Load <- function() {
 
 ###############################################################################
 
-clogitP <- function() {
-  activeModelP() && class(get(ActiveModel()))[1] == "clogit"
+bws3ClogitP <- function() {
+  activeModelP() && 
+  class(get(ActiveModel()))[1] == "clogit" && 
+  class(get(ActiveDataSet()))[1] == "bws3dataset"
 }
 
 bws3DataP <- function() {

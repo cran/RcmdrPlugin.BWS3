@@ -5,7 +5,7 @@ item    bws3Menu   command           "Display questions..."             bws3Ques
 item    bws3Menu   command           "Create data set for analysis..."  bws3Dataset          "activeDataSetP()" "packageAvailable('support.BWS3')"
 item    bws3Menu   command           "Create interactions..."           bws3Interactions     "bws3DataP()"      "packageAvailable('support.BWS3')"
 item    bws3Menu   command           "Fit model..."                     bws3Model            "bws3DataP()"      "packageAvailable('survival')"
-item    bws3Menu   command           "Calculate MWTP..."                bws3Mwtp             "clogitP()"        "packageAvailable('support.CEs')"
+item    bws3Menu   command           "Calculate MWTP..."                bws3Mwtp             "bws3ClogitP()"    "packageAvailable('support.CEs')"
 item    bws3Menu   separator         ""                                 ""                   ""                 ""
 item    bws3Menu   command           "Load saved objects..."            bws3Load             ""                 "packageAvailable('support.BWS3')"
 item    topMenu    cascade           "BWS3"                             bws3Menu             ""                 "packageAvailable('support.BWS3')"
