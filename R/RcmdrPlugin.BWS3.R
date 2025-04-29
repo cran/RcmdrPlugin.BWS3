@@ -1300,7 +1300,7 @@ bws3Load <- function() {
   file <- 
     tclvalue(
       tkgetOpenFile(
-        filetype = 
+        filetypes = 
           gettextRcmdr(' {"R Data Files" {".rda" ".RDA" ".rdata" ".RData"}}')))
   if (file == "") {
     return()
@@ -1329,4 +1329,406 @@ bws3ClogitP <- function() {
 bws3DataP <- function() {
   activeDataSetP() && class(get(ActiveDataSet()))[1] == "bws3dataset"
 }
+###############################################################################
 
+bws3ResponseSet <- function(){
+  initializeDialog(title = gettextRcmdr("Set Options for Response Collection"))
+  defaults <- list(designName      = "BWS3design",
+                   ini.noneofthese = "1",
+                   saveVariable    ="1")
+  dialog.values = getDialog("bws3ResponseSet", defaults)
+  
+  ##### Input Frame #####
+  inputsFrame <- tkframe(top)
+  designFrame <- tkframe(inputsFrame)
+  noneFrame   <- tkframe(inputsFrame)
+  blockFrame  <- tkframe(inputsFrame)
+  saveFrame   <- tkframe(inputsFrame)
+  
+  # Choice sets
+  designName <- tclVar(dialog.values$designName)
+  design <- ttkentry(designFrame, width = "14",
+                     textvariable = designName)
+  
+  # None of these
+  noneVariable <- tclVar(dialog.values$ini.noneofthese)
+  noneCheckBox <- ttkcheckbutton(noneFrame, variable = noneVariable)
+  
+  # Block
+  nBLOCK <- eval(parse(text = paste0(tclvalue(designName),
+                                     "$design.information$nblocks")))
+  setBLOCK <- variableComboBox(blockFrame,
+                               variableList = seq(nBLOCK),
+                               initialSelection = "1",
+                               nullSelection = "<no block selected>",
+                               title = "Block number")
+  
+  # Save
+  saveVariable <- tclVar(dialog.values$saveVariable)
+  saveCheckBox <- ttkcheckbutton(saveFrame, variable = saveVariable)
+  
+  onOK <- function() {
+    BLOCK <- getSelection(setBLOCK)
+    
+    if (BLOCK == "<no block selected>") {
+      Message(gettextRcmdr("Please select block number"), type = "warning")
+      closeDialog()
+      bws3ResponseSet()
+      return()
+    }
+    
+    if (tclvalue(noneVariable) == 1) {
+      NONE <- TRUE
+    } else {
+      NONE <- FALSE
+    }
+    
+    if (tclvalue(saveVariable) == 1) {
+      SAVE <- TRUE
+    } else {
+      SAVE <- FALSE
+    }
+    
+    closeDialog()
+    
+    putRcmdr("BWS3response.BLOCK", as.numeric(BLOCK))
+    putRcmdr("BWS3response.NONE",  NONE)
+    putRcmdr("BWS3response.SAVE",  SAVE)
+    
+    bws3Response()
+    
+    tkfocus(CommanderWindow())
+  }
+  
+  OKCancelHelp(helpSubject = "bws3Response")
+  
+  # Name of design
+  tkgrid(
+    labelRcmdr(
+      designFrame,
+      text = gettextRcmdr("Design ")),
+    design,
+    sticky = "w")
+  
+  # Check box for none of these option
+  tkgrid(
+    noneCheckBox,
+    labelRcmdr(
+      noneFrame,
+      text = gettextRcmdr("Opt-out option")),
+    sticky = "w")
+  
+  # Check box for save responses
+  tkgrid(
+    saveCheckBox,
+    labelRcmdr(
+      saveFrame,
+      text = gettextRcmdr("Save to file")),
+    sticky = "w")
+  
+  tkgrid(designFrame, sticky = "nw")
+  tkgrid(noneFrame,   sticky = "nw")
+  tkgrid(saveFrame,   sticky = "nw")
+  
+  tkgrid(getFrame(setBLOCK), sticky = "w")
+  tkgrid(blockFrame, sticky = "nw")
+  
+  tkgrid(inputsFrame, sticky = "nw")
+  
+  tkgrid(buttonsFrame, columnspan = 2, sticky = "w")
+  
+  dialogSuffix()
+}
+
+###############################################################################
+
+bws3Response <- function() {
+  initializeDialog(title = gettextRcmdr("Collect Responses to BWS3 Questions"))
+  defaults <- list(
+    ini.Q          = 1,
+    ini.bestName   = "<no alternative selected>",
+    ini.worstName  = "<no alternative selected>",
+    ini.designName = "BWS3design")
+  dialog.values <- getDialog("bws3Response", defaults)
+
+  block <-getRcmdr("BWS3response.BLOCK")
+  none  <-getRcmdr("BWS3response.NONE")
+  save  <-getRcmdr("BWS3response.SAVE")
+  
+  designName  <- tclVar(dialog.values$ini.designName)
+  designValue <- tclvalue(designName)
+  
+  nQues <- eval(parse(text = paste0(tclvalue(designName),
+                                    "$design.information$nquestions")))
+  nALTs <- eval(parse(text = paste0(tclvalue(designName),
+                                    "$design.information$nalternatives")))
+  nAtts <- eval(parse(text = paste0(tclvalue(designName),
+                                    "$design.information$nattributes")))
+  
+  selectedBlockRows <- seq(nQues) + nQues * (block - 1)
+  
+  inputsFrame   <- tkframe(top)
+  altFrame      <- tkframe(inputsFrame)
+  bwFrame       <- tkframe(inputsFrame)
+  okcancelFrame <- tkframe(top)
+  okFrame       <- tkframe(okcancelFrame)
+  cancelFrame   <- tkframe(okcancelFrame)
+  
+  # ComboBox
+  if(none == TRUE) {
+    varLIST <- c(paste0("alt. ", seq(nALTs)), "None of these")
+  } else {
+    varLIST <- paste0("alt. ", seq(nALTs))
+  }
+  ## Best
+  bestitem <- variableComboBox(bwFrame,
+                               variableList  = varLIST,
+                               nullSelection = "<no alternative selected>",
+                               adjustWidth   = TRUE)
+  ## Worst
+  worstitem <- variableComboBox(bwFrame,
+                                variableList  = varLIST,
+                                nullSelection = "<no alternative selected>",
+                                adjustWidth   = TRUE)
+  
+  # Button
+  ## OK
+  onOK <- function() {
+    bestName  <- getSelection(bestitem)
+    worstName <- getSelection(worstitem)
+    
+    if(bestName == "<no alternative selected>") {
+      Message(gettextRcmdr("Please select your best alternative"),
+              type = "warning")
+      closeDialog()
+      bws3Response()
+      return()
+    }
+    
+    if(worstName == "<no alternative selected>") {
+      Message(gettextRcmdr("Please select your worst alternative"),
+              type = "warning")
+      closeDialog()
+      bws3Response()
+      return()
+    }
+
+    if(bestName == worstName) {
+      Message(
+        gettextRcmdr("Your best alternative must differ from your worst alternative"),
+        type = "warning")
+      closeDialog()
+      bws3Response()
+      return()
+    }
+    
+    putDialog("bws3Response", list(
+      ini.Q          = dialog.values$ini.Q + 1,
+      ini.bestName   = "<no alternative selected>",
+      ini.worstName  = "<no alternative selected>",
+      ini.designName = designValue))
+    
+    if(dialog.values$ini.Q == 1) {
+      set.seed(seed = NULL)
+      justDoIt(paste0("MyBWS3responses <- c(", sample.int(1e10, 1),
+                      ", ", block, ")"))
+    }
+    
+    justDoIt(paste0("MyBWS3responses <- c(MyBWS3responses, ",
+                    which(bestName  == varLIST), ", ",
+                    which(worstName == varLIST), ")"))
+    
+    closeDialog()
+    
+    if(dialog.values$ini.Q < nQues) {
+      bws3Response()
+    } else {
+      putDialog("bws3Response", list(
+        ini.Q          = 1,
+        ini.bestName   = "<no alternative selected>",
+        ini.worstName  = "<no alternative selected>",
+        ini.designName = designValue))
+      
+      varNAMES <- paste0("'",
+                         paste0(rep(c("B", "W"), time = nQues),
+                                rep(1:nQues, each = 2),
+                                collapse = "', '"),
+                         "'")
+      cmd <- paste0("names(MyBWS3responses) <- c('ID', 'BLOCK', ",
+                    c(varNAMES), ")")
+      justDoIt(cmd)
+      doItAndPrint(paste0("MyBWS3responses"))
+      
+      # Save
+      if(isTRUE(save)) {
+        saveFile <- tclvalue(tkgetSaveFile(
+          filetypes = gettextRcmdr(
+            '{"CSV Files" {".csv" ".CSV"}}'),
+          defaultextension = ".csv",
+          initialfile = "MyBWS3responses.csv",
+          parent = CommanderWindow()))
+        if(saveFile == "") {
+          tkfocus(CommanderWindow())
+          return()
+        }
+        cmd <- paste0('write.csv(t(MyBWS3responses), file = "', saveFile,
+                      '", row.names = FALSE)')
+        justDoIt(cmd)
+        logger(cmd)
+        Message(
+          paste0(
+            gettextRcmdr("Your responses to BWS3 questions were exported to file: "),
+            saveFile),
+          type = "note")
+      }
+    }
+    tkfocus(CommanderWindow())
+  }
+  
+  ## Cancel
+  onCancel <- function() {
+    closeDialog()
+
+    putDialog("bws3Response", list(
+      ini.Q          = 1,
+      ini.bestName   = "<no alternative selected>",
+      ini.worstName  = "<no alternative selected>",
+      ini.designName = designValue))
+    
+    tkfocus(CommanderWindow())
+  }
+  
+  tkgrid(
+    labelRcmdr(
+      inputsFrame,
+      text = gettextRcmdr(paste0("Question ", dialog.values$ini.Q))),
+    sticky = "w")
+  
+  tkgrid(
+    labelRcmdr(
+      inputsFrame,
+      text = gettextRcmdr(
+        "Please select your best and worst alternatives from the following:")),
+    sticky = "w")
+  
+  dsg <- eval(parse(text = paste0("bws3ResponseQ(", tclvalue(designName), ")")))
+  
+  for(i in seq(nALTs)) {
+    tkgrid(
+      labelRcmdr(
+        altFrame,
+        text = paste0(dsg[[selectedBlockRows[dialog.values$ini.Q]]][1, i], ": "),
+        fg = getRcmdr("title.color"),
+        font = "RcmdrTitleFont"),
+      labelRcmdr(
+        altFrame,
+        text = dsg[[selectedBlockRows[dialog.values$ini.Q]]][-1, i]),
+      sticky = "w")
+  }
+  tkgrid(altFrame, sticky = "w")
+  
+  tkgrid(
+    labelRcmdr(inputsFrame, text =""),
+    sticky = "w")
+  
+  tkgrid(labelRcmdr(bwFrame, text = "My best: "),
+         getFrame(bestitem),
+         sticky = "w")
+  tkgrid(labelRcmdr(bwFrame, text = "My worst: "),
+         getFrame(worstitem),
+         sticky = "w")
+  tkgrid(bwFrame, sticky = "w")
+  
+  okButton <- buttonRcmdr(okFrame,
+                          text = gettextRcmdr("OK"),
+                          foreground = "darkgreen",
+                          width = "10",
+                          command = onOK,
+                          default = "active",
+                          borderwidth = 3,
+                          image = "::image::okIcon",
+                          compound = "left")
+
+  cancelButton <- buttonRcmdr(cancelFrame,
+                              text = gettextRcmdr("Cancel"),
+                              foreground = "darkgreen",
+                              width = "10",
+                              command = onCancel,
+                              default = "active",
+                              borderwidth = 3,
+                              image = "::image::cancelIcon",
+                              compound = "left")
+  
+  tkgrid(okButton, sticky = "w")
+  tkconfigure(okButton, takefocus = 0)
+
+  tkgrid(cancelButton, sticky = "w")
+  tkconfigure(cancelButton, takefocus = 0)
+  
+  tkgrid(
+    labelRcmdr(
+      inputsFrame,
+      text = ""),
+    sticky = "w")
+  
+  tkgrid(inputsFrame,          sticky = "nw")
+  tkgrid(okFrame, cancelFrame, sticky = "nw")
+  tkgrid(okcancelFrame,        sticky = "nw")
+
+  dialogSuffix()
+}
+
+###############################################################################
+bws3ResponseQ <- function (design, common = NULL, quote = TRUE) {
+  nblocks <- design$design.information$nblocks
+  nquestions <- design$design.information$nquestions
+  nalternatives <- design$design.information$nalternatives
+  nattributes <- design$design.information$nattributes
+  attribute.names <- names(design[[1]][[1]])[-(1:3)]
+  my.design <- as.matrix(design[[1]][[1]])
+  
+  if (nalternatives >= 2) {
+    for (i in 2:nalternatives) {
+      my.design <- rbind(my.design, as.matrix(design$alternatives[[i]]))
+    }
+  }
+  
+  if (is.null(common) == FALSE) {
+    nalternatives <- nalternatives + 1
+    common.base <- design$alternatives[[1]]
+    common.base[, 3] <- nalternatives
+    common.base <- as.matrix(common.base)
+    for (i in attribute.names) {
+      common.base[, i] <- common[[i]]
+    }
+    my.design <- rbind(my.design, common.base)
+  }
+  
+  rownames(my.design) <- NULL
+  my.design <- data.frame(my.design)
+  my.design$BLOCK <- as.numeric(as.character(my.design$BLOCK))
+  my.design$QES <- as.numeric(as.character(my.design$QES))  
+  my.design$ALT <- as.numeric(as.character(my.design$ALT))
+  my.design <- my.design[order(my.design$BLOCK, my.design$QES, my.design$ALT), ]
+  alternative.names <- paste("alt.", 1:nalternatives, sep = "")
+  
+  BWS3show <- list(NULL)
+  
+  q <- 1
+  for (i in 1:nblocks) {
+    for (j in 1:nquestions) {
+      temp <- subset(my.design, my.design$BLOCK == i & my.design$QES == j)
+      temp <- temp[, 4:(3 + nattributes)]
+      if (nattributes == 1) {
+        temp <- as.data.frame(temp)
+        names(temp) <- attribute.names
+      }
+      temp <- t(temp)
+      colnames(temp) <- alternative.names
+      BWS3show[[q]] <- temp
+      BWS3show[[q]] <- rbind(colnames(BWS3show[[q]]), BWS3show[[q]])
+      q <- q + 1
+    }
+  }
+  return(BWS3show)
+}

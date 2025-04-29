@@ -2,6 +2,7 @@
 menu    bws3Menu   topMenu           ""                                 ""                   ""                 ""
 item    bws3Menu   command           "Design choice sets..."            bws3Design           ""                 "packageAvailable('support.CEs')"
 item    bws3Menu   command           "Display questions..."             bws3Questions        ""                 "packageAvailable('support.CEs')"
+item    bws3Menu   command           "Collect responses..."             bws3ResponseSet      ""                 "packageAvailable('support.CEs')"
 item    bws3Menu   command           "Create data set for analysis..."  bws3Dataset          "activeDataSetP()" "packageAvailable('support.BWS3')"
 item    bws3Menu   command           "Create interactions..."           bws3Interactions     "bws3DataP()"      "packageAvailable('support.BWS3')"
 item    bws3Menu   command           "Fit model..."                     bws3Model            "bws3DataP()"      "packageAvailable('survival')"

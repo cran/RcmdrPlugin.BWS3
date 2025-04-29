@@ -1,0 +1,20 @@
+citHeader("To cite RcmdrPlugin.BWS3 in publications use:")
+
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
+vers <- paste("R package version", meta$Version)
+
+bibentry(
+  bibtype = "Manual",
+  title   = "{RcmdrPlugin.BWS3: R Commander Plug-in for Case 3 Best-Worst Scaling}",
+  author  = c(person("Hideo", "Aizaki")),
+  year    = year,
+  note    = vers,
+  url     = "https://CRAN.R-project.org/package=RcmdrPlugin.BWS3",
+
+  textVersion = 
+  paste0("Aizaki H (", year, ").",
+        "RcmdrPlugin.BWS3: R Commander Plug-in for Case 3 Best-Worst Scaling.",
+        vers, ".",
+        "URL https://CRAN.R-project.org/package=RcmdrPlugin.BWS3.")
+)
+
