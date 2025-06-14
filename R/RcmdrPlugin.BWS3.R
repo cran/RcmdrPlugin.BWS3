@@ -1609,31 +1609,38 @@ bws3Response <- function() {
       inputsFrame,
       text = gettextRcmdr(
         "Please select your best and worst alternatives from the following:")),
-    sticky = "w")
+    sticky = "w", pady = c(0, 5))
   
   dsg <- eval(parse(text = paste0("bws3ResponseQ(", tclvalue(designName), ")")))
   
-  for(i in seq(nALTs)) {
-    tkgrid(
-      labelRcmdr(
-        altFrame,
-        text = paste0(dsg[[selectedBlockRows[dialog.values$ini.Q]]][1, i], ": "),
-        fg = getRcmdr("title.color"),
-        font = "RcmdrTitleFont"),
-      labelRcmdr(
-        altFrame,
-        text = dsg[[selectedBlockRows[dialog.values$ini.Q]]][-1, i]),
-      sticky = "w")
+  attribute.names <- eval(parse(text = paste0("names(", tclvalue(designName),
+                                              "[[1]][[1]])[-(1:3)]")))
+  cmd <-paste0("labelRcmdr(altFrame, text = paste0('')),")
+  for (i in attribute.names) {
+    cmd <- paste0(cmd,
+                  paste0("labelRcmdr(altFrame, text = paste0('", i, "')),"))
+  }
+  cmd <- paste0(cmd, paste0("sticky = 'w'"))
+  eval(parse(text = paste0("tkgrid(", cmd, ")")))
+  
+  for (i in seq(nALTs)) {
+    cmd <- paste0("labelRcmdr(altFrame,",
+                  "text = paste0(dsg[[selectedBlockRows[dialog.values$ini.Q]]][1,",
+                  i, "], ': ')),")
+    for (j in 2:(nAtts + 1)) {
+      cmd <- paste0(cmd,
+                    "labelRcmdr(altFrame,",
+                    "text = dsg[[selectedBlockRows[dialog.values$ini.Q]]][",
+                    j, ", ", i, "]),")
+    }
+    cmd <- paste0(cmd, "sticky = 'w'")
+    eval(parse(text = paste0("tkgrid(", cmd, ")")))
   }
   tkgrid(altFrame, sticky = "w")
   
-  tkgrid(
-    labelRcmdr(inputsFrame, text =""),
-    sticky = "w")
-  
   tkgrid(labelRcmdr(bwFrame, text = "My best: "),
          getFrame(bestitem),
-         sticky = "w")
+         sticky = "w", pady = c(10, 3))
   tkgrid(labelRcmdr(bwFrame, text = "My worst: "),
          getFrame(worstitem),
          sticky = "w")

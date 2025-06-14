@@ -1,8 +1,8 @@
 Package: RcmdrPlugin.BWS3
 Type: Package
 Title: R Commander Plug-in for Case 3 Best-Worst Scaling
-Version: 0.3-0
-Date: 2025-04-29
+Version: 0.3-1
+Date: 2025-06-14
 Authors@R: person(given = "Hideo",
                   family = "Aizaki",
                   role = c("aut", "cre"),
@@ -14,8 +14,8 @@ License: GPL (>= 2)
 URL: https://sites.google.com/view/r4sp/rcmdrplugin
 RcmdrModels: clogit
 NeedsCompilation: no
-Packaged: 2025-04-29 04:20:25 UTC; r
+Packaged: 2025-06-14 03:20:58 UTC; r
 Author: Hideo Aizaki [aut, cre]
 Maintainer: Hideo Aizaki <azk-r@spa.nifty.com>
 Repository: CRAN
-Date/Publication: 2025-04-29 04:40:14 UTC
+Date/Publication: 2025-06-14 03:50:05 UTC
